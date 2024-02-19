@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lambda-url-shortener"
+version = "0.1.0"
+description = "A minimal serverless URL shortener on AWS Lambda and DynamoDB, as a small reference project."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Narayana Vemburaj" }]
+dependencies = ["boto3>=1.28"]
+
+[project.optional-dependencies]
+# The local development server keeps its data in moto's in-memory DynamoDB.
+local = ["moto[dynamodb]>=5"]
+dev = ["pytest>=7", "moto[dynamodb]>=5", "pyyaml>=6"]
+
+[project.scripts]
+url-shortener-local = "url_shortener.local:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

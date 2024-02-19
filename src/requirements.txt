@@ -1,0 +1,2 @@
+# Intentionally empty: the function uses only the standard library and the
+# boto3 that the Lambda Python runtime already includes.
