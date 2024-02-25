@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  lambda-url-shortener: one Lambda function behind an API Gateway HTTP API,
+  with links stored in a DynamoDB table.
+
+Parameters:
+  CreateToken:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: >
+      Optional shared secret. If set, creating a link requires the header
+      "Authorization: Bearer <token>". If empty, anyone can create links.
+  DefaultTtlSeconds:
+    Type: Number
+    Default: 0
+    MinValue: 0
+    Description: Lifetime of links created without ttl_seconds. 0 means they never expire.
+
+Resources:
+  LinksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: slug
+          AttributeType: S
+      KeySchema:
+        - AttributeName: slug
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
+
+  ShortenerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Creates short links, redirects and counts clicks.
+      CodeUri: src/
+      Handler: url_shortener.handler.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - arm64
+      MemorySize: 128
+      Timeout: 10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref LinksTable
+          CREATE_TOKEN: !Ref CreateToken
+          DEFAULT_TTL_SECONDS: !Ref DefaultTtlSeconds
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt LinksTable.Arn
+      Events:
+        CreateLink:
+          Type: HttpApi
+          Properties:
+            Path: /links
+            Method: POST
+        LinkStats:
+          Type: HttpApi
+          Properties:
+            Path: /links/{slug}
+            Method: GET
+        Redirect:
+          Type: HttpApi
+          Properties:
+            Path: /{slug}
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: Base URL of the shortener.
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+  LinksTableName:
+    Description: DynamoDB table holding the links.
+    Value: !Ref LinksTable
