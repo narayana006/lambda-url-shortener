@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /{slug}",
+  "rawPath": "/lambda-docs",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "content-length": "0",
+    "host": "a1b2c3d4e5.execute-api.us-east-1.amazonaws.com",
+    "user-agent": "curl/8.7.1",
+    "x-forwarded-for": "203.0.113.10",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "a1b2c3d4e5",
+    "domainName": "a1b2c3d4e5.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "a1b2c3d4e5",
+    "http": {
+      "method": "GET",
+      "path": "/lambda-docs",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "203.0.113.10",
+      "userAgent": "curl/8.7.1"
+    },
+    "requestId": "JKJaXmPLvHcESHA=",
+    "routeKey": "GET /{slug}",
+    "stage": "$default",
+    "time": "15/Jan/2025:09:00:00 +0000",
+    "timeEpoch": 1736931600000
+  },
+  "isBase64Encoded": false,
+  "pathParameters": {
+    "slug": "lambda-docs"
+  }
+}
